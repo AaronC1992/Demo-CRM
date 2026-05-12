@@ -1,16 +1,85 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Phone, Mail, MapPin, Star, DollarSign } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, MapPin, Star, DollarSign, Pencil, X } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import type { Customer, CustomerStatus } from '@/lib/types';
 import Badge, { jobStatusVariant, quoteStatusVariant, invoiceStatusVariant } from '@/components/ui/Badge';
+import Modal from '@/components/ui/Modal';
+
+const STATUSES: CustomerStatus[] = ['Active', 'Inactive', 'VIP'];
+const SOURCES = ['Website', 'Referral', 'Google', 'Facebook', 'Yelp', 'Direct', 'Other'];
+
+function EditCustomerModal({ customer, onClose }: { customer: Customer; onClose: () => void }) {
+  const { dispatch } = useStore();
+  const [form, setForm] = useState({ ...customer });
+  const set = (k: keyof Customer, v: string | number) => setForm(f => ({ ...f, [k]: v }));
+
+  const handleSave = () => {
+    dispatch({ type: 'UPDATE_CUSTOMER', payload: form });
+    onClose();
+  };
+
+  return (
+    <Modal isOpen onClose={onClose} title="Edit Customer" size="lg">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+          <input value={form.name} onChange={e => set('name', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+          <input value={form.phone} onChange={e => set('phone', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input value={form.email} onChange={e => set('email', e.target.value)} type="email"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+          <input value={form.address} onChange={e => set('address', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+          <select value={form.status} onChange={e => set('status', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            {STATUSES.map(s => <option key={s}>{s}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Lead Source</label>
+          <select value={form.source} onChange={e => set('source', e.target.value)}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            {SOURCES.map(s => <option key={s}>{s}</option>)}
+          </select>
+        </div>
+        <div className="col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <textarea value={form.notes} onChange={e => set('notes', e.target.value)} rows={3}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none" />
+        </div>
+      </div>
+      <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
+        <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium">Cancel</button>
+        <button onClick={handleSave} className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg">
+          Save Changes
+        </button>
+      </div>
+    </Modal>
+  );
+}
 
 export default function CustomerDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const { state } = useStore();
+  const [editOpen, setEditOpen] = useState(false);
 
   const customer = state.customers.find(c => c.id === id);
   if (!customer) {
@@ -36,6 +105,8 @@ export default function CustomerDetailPage() {
 
   return (
     <div className="p-6 space-y-6">
+      {editOpen && <EditCustomerModal customer={customer} onClose={() => setEditOpen(false)} />}
+
       {/* Header */}
       <div>
         <button onClick={() => router.back()} className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 text-sm font-medium mb-4">
@@ -54,10 +125,10 @@ export default function CustomerDetailPage() {
               <p className="text-sm text-gray-500">Customer since {customer.createdDate} · via {customer.source}</p>
             </div>
           </div>
-          <Link href={`/dashboard/customers`}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">
-            Edit Profile
-          </Link>
+          <button onClick={() => setEditOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium">
+            <Pencil size={14} /> Edit Profile
+          </button>
         </div>
       </div>
 
