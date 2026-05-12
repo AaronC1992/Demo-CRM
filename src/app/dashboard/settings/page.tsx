@@ -1,12 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Save, CheckCircle } from 'lucide-react';
+import { Save, CheckCircle, PlayCircle } from 'lucide-react';
 import { useStore } from '@/lib/store';
 import type { BusinessSettings } from '@/lib/types';
+import { useTutorial } from '@/components/Tutorial';
 
 export default function SettingsPage() {
   const { state, dispatch } = useStore();
+  const { start: startTutorial } = useTutorial();
   const [form, setForm] = useState<BusinessSettings>(state.settings);
   const [saved, setSaved] = useState(false);
 
@@ -29,9 +31,18 @@ export default function SettingsPage() {
 
   return (
     <div className="p-6 space-y-6 max-w-2xl">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Business profile and CRM configuration</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Business profile and CRM configuration</p>
+        </div>
+        <button
+          type="button"
+          onClick={startTutorial}
+          className="flex items-center gap-2 px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-lg border border-indigo-200 transition-colors"
+        >
+          <PlayCircle size={16} /> Start Tutorial
+        </button>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
