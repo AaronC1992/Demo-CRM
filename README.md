@@ -1,4 +1,50 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pinnacle Home Services — CRM Demo
+
+A polished full-stack demo app showcasing a **small business public website** paired with a **complete CRM dashboard** — built as a marketing demo for local home-service businesses (HVAC, Plumbing & Electrical).
+
+## 🔗 Live Demo
+
+**[https://portfolio-project-vert-three.vercel.app](https://portfolio-project-vert-three.vercel.app)**
+
+> Click **"Admin Dashboard →"** on the homepage to explore the full CRM.
+
+---
+
+## Features
+
+### Public Website
+- Sticky navigation with smooth scroll
+- Hero section with call-to-action
+- Services showcase (HVAC, Plumbing, Electrical)
+- Customer reviews / testimonials
+- Contact & quote request form (saves directly into the CRM lead pipeline)
+
+### CRM Dashboard
+| Page | What it does |
+|------|-------------|
+| **Dashboard** | KPI cards, 12-month revenue bar chart, lead source pie chart, recent leads |
+| **Leads** | Full CRUD table, status filters, convert lead → customer |
+| **Customers** | Customer directory with detail pages showing all linked jobs, quotes & invoices |
+| **Jobs** | Job management with status tracking (Scheduled → In Progress → Completed) |
+| **Quotes** | Quote builder with convert-to-job workflow |
+| **Invoices** | Invoice tracking with overdue highlighting |
+| **Follow-Ups** | Task list with priority flags and overdue alerts |
+| **Reports** | Revenue analytics, top customers, lead sources, win/loss charts |
+| **QuickBooks** | Simulated OAuth2 connect/sync flow (demo only) |
+| **Settings** | Business info, team members, lead sources, service categories |
+
+---
+
+## Tech Stack
+
+- **Next.js 15** (App Router, TypeScript)
+- **React 19** with Context + useReducer for global state
+- **Tailwind CSS v4** (CSS-first config)
+- **Recharts** — bar, pie, and composed charts
+- **Lucide React** — icons
+- **localStorage** persistence — state survives page refreshes
+
+---
 
 ## Getting Started
 
