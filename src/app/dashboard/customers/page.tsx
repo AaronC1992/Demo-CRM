@@ -79,11 +79,20 @@ export default function CustomersPage() {
   const [showAdd, setShowAdd] = useState(false);
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null);
 
+  const topSpendThreshold = state.customers.length
+    ? [...state.customers].sort((a, b) => b.totalSpent - a.totalSpent)
+        .slice(0, Math.max(1, Math.ceil(state.customers.length * 0.25)))
+        .at(-1)?.totalSpent ?? 0
+    : 0;
+
   const filtered = state.customers.filter(c => {
     const q = search.toLowerCase();
     const matchSearch = c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || c.phone.includes(q);
-    const matchStatus = filterStatus === 'All' || c.status === filterStatus;
-    return matchSearch && matchStatus;
+    let matchFilter = true;
+    if (filterStatus === 'Top Spend') matchFilter = c.totalSpent >= topSpendThreshold;
+    else if (filterStatus === 'Open Balance') matchFilter = c.openBalance > 0;
+    else if (filterStatus !== 'All') matchFilter = c.status === filterStatus;
+    return matchSearch && matchFilter;
   });
 
   function handleAdd(data: Omit<Customer, 'id'>) {
@@ -130,10 +139,15 @@ export default function CustomersPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 items-center">
-        <div className="flex gap-2">
-          {['All', ...STATUSES].map(s => (
+        <div className="flex flex-wrap gap-2">
+          {['All', ...STATUSES, 'Top Spend', 'Open Balance'].map(s => (
             <button key={s} onClick={() => setFilterStatus(s)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${filterStatus === s ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                filterStatus === s ? 'bg-indigo-600 text-white' :
+                s === 'Top Spend' ? 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200' :
+                s === 'Open Balance' ? 'bg-red-50 text-red-700 hover:bg-red-100 border border-red-200' :
+                'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}>
               {s}
             </button>
           ))}
